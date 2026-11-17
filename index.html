@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="Your daily finance, investing, learning and inspiration companion.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Mind & Money AI</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d2e;--panel2:#19263a;--text:#edf3fb;--muted:#9aabc0;--gold:#e6bd69;--line:#29384e;--green:#75d6a1;--red:#ff8c8c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif;padding-bottom:84px}
+header{padding:22px 18px 14px;background:linear-gradient(140deg,#17263d,#101827)}header small{color:var(--gold);letter-spacing:1.5px;font-weight:700}h1{margin:5px 0;font-size:26px}header p{margin:0;color:var(--muted)}
+main{max-width:760px;margin:auto;padding:14px}.tab{display:none}.tab.active{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 13px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:0 0 7px}.muted{color:var(--muted)}.gold{color:var(--gold)}
+.quote{font-size:19px;line-height:1.45;margin:8px 0 10px}.author{color:var(--gold);font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:var(--panel2);padding:13px;border-radius:12px}.metric b{display:block;font-size:21px;margin-top:4px}
+label{display:block;color:var(--muted);font-size:13px;margin:10px 0 5px}
+input,textarea,select{width:100%;background:#0c1625;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit}
+textarea{min-height:115px;resize:vertical}
+button,.btn{background:var(--gold);color:#172033;border:0;border-radius:10px;padding:11px 14px;font-weight:700;font-size:14px;cursor:pointer;margin:8px 6px 0 0}
+button.secondary,.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+button.danger{background:#4a222a;color:#ffdce0}.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.item{padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+nav{position:fixed;bottom:0;left:0;right:0;background:#101a2a;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 3px calc(8px + env(safe-area-inset-bottom));z-index:5}
+nav button{margin:0;background:transparent;color:var(--muted);padding:8px 5px;font-size:11px;flex:1}
+nav button.active{color:var(--gold);background:#1b2a40}
+nav span{display:block;font-size:19px;margin-bottom:2px}
+.notice{font-size:12px;color:var(--muted);line-height:1.5}.pill{display:inline-block;background:#24344b;color:var(--gold);padding:4px 8px;border-radius:99px;font-size:11px}
+a{color:var(--gold)}.empty{color:var(--muted);font-size:13px;padding:10px 0}
+@media(min-width:650px){main{padding:22px}.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header>
+ <small>YOUR PERSONAL INTELLIGENCE COMPANION</small>
+ <h1>Mind & Money AI</h1>
+ <p id="today"></p>
+</header>
+<main>
+<section id="home" class="tab active">
+ <div class="card">
+  <div class="row"><h2>Daily inspiration</h2><span class="pill">TODAY</span></div>
+  <div id="quote" class="quote"></div><div id="author" class="author"></div>
+  <button class="secondary" onclick="newQuote()">New quote</button>
+ </div>
+ <div class="card">
+  <h2>Today's money check-in</h2>
+  <div class="grid">
+   <div class="metric"><span class="muted">Saved this month</span><b id="savedMetric">$0</b></div>
+   <div class="metric"><span class="muted">Monthly spending logged</span><b id="spentMetric">$0</b></div>
+  </div>
+  <button onclick="showTab('finance')">Open financial dashboard</button>
+ </div>
+ <div class="card">
+  <h2>Today's three actions</h2>
+  <div class="item">📚 Learn one useful idea for 15 minutes.</div>
+  <div class="item">💵 Record today's spending and saving.</div>
+  <div class="item">🌱 Do one thing that creates value for someone else.</div>
+ </div>
+ <div class="card"><h2>Quick access</h2>
+  <div class="grid">
+   <button onclick="showTab('stocks')">📈 Stocks</button>
+   <button onclick="showTab('books')">📖 Book library</button>
+   <button onclick="showTab('chat')">💬 AI assistant</button>
+   <button onclick="showTab('finance')">💰 Finance</button>
+  </div>
+ </div>
+</section>
+
+<section id="finance" class="tab">
+ <div class="card"><h2>Financial snapshot</h2>
+  <div class="grid">
+   <div class="metric"><span class="muted">Income logged</span><b id="incomeTotal">$0</b></div>
+   <div class="metric"><span class="muted">Expenses logged</span><b id="expenseTotal">$0</b></div>
+   <div class="metric"><span class="muted">Net cash flow</span><b id="netTotal">$0</b></div>
+   <div class="metric"><span class="muted">Savings goal</span><b id="goalTotal">$0</b></div>
+  </div>
+ </div>
+ <div class="card"><h2>Record a transaction</h2>
+  <label>Type</label><select id="txType"><option value="expense">Expense</option><option value="income">Income</option><option value="saving">Savings contribution</option></select>
+  <label>Amount ($)</label><input id="txAmount" type="number" min="0" step=".01" placeholder="25.00">
+  <label>Category / description</label><input id="txNote" placeholder="Groceries, paycheck, savings...">
+  <button onclick="addTransaction()">Save transaction</button>
+ </div>
+ <div class="card"><h2>Savings target</h2>
+  <label>Target amount ($)</label><input id="savingsGoal" type="number" min="0" placeholder="1000">
+  <button onclick="saveGoal()">Save goal</button>
+  <div id="goalProgress" class="notice"></div>
+ </div>
+ <div class="card"><h2>Recent activity</h2><div id="transactions"></div><button class="secondary" onclick="exportData()">Export my data</button></div>
+ <p class="notice">This is a personal tracking tool, not a bank account or financial adviser. Data is stored in this browser on this device. Export backups regularly.</p>
+</section>
+
+<section id="stocks" class="tab">
+ <div class="card"><h2>Stock watchlist</h2>
+  <label>Company ticker</label><div class="row"><input id="ticker" placeholder="e.g. AAPL"><button onclick="addTicker()">Add</button></div>
+  <div id="watchlist"></div>
+ </div>
+ <div class="card"><h2>Research a stock</h2>
+  <p class="muted">Open a current quote, chart, news and company information from public finance websites.</p>
+  <label>Ticker symbol</label><input id="researchTicker" placeholder="e.g. MSFT">
+  <button onclick="researchStock()">Open stock research</button>
+  <p class="notice">Live prices are not embedded in this offline-first starter. External quotes may be delayed. Verify prices and filings before making decisions.</p>
+ </div>
+ <div class="card"><h2>Investor checklist</h2>
+  <div class="item">☐ Understand how the company makes money.</div><div class="item">☐ Review revenue, earnings, debt and cash flow.</div><div class="item">☐ Compare valuation with competitors and history.</div><div class="item">☐ Identify risks and what could invalidate your thesis.</div><div class="item">☐ Decide position size before investing.</div>
+ </div>
+</section>
+
+<section id="books" class="tab">
+ <div class="card"><h2>Book & knowledge library</h2>
+  <label>Book title</label><input id="bookTitle" placeholder="Title">
+  <label>Author</label><input id="bookAuthor" placeholder="Author">
+  <label>Your notes or permitted excerpt</label><textarea id="bookNotes" placeholder="Paste your notes or a passage you have permission to use..."></textarea>
+  <button onclick="saveBook()">Save to library</button>
+ </div>
+ <div class="card"><h2>Saved knowledge</h2><div id="bookList"></div>
+  <p class="notice">This starter organizes notes locally. For AI-powered summaries, copy your notes into the AI assistant you use or connect a local AI server in a later version. Summaries should be based on text you provide or are permitted to use.</p>
+ </div>
+</section>
+
+<section id="chat" class="tab">
+ <div class="card"><h2>AI assistant</h2>
+  <p class="muted">Use the prompt builder below with a free AI service, or connect a local Ollama model in a future version.</p>
+  <label>What do you want help with?</label>
+  <textarea id="question" placeholder="Explain index funds, help me plan a budget, analyze the risks of a stock, or teach me a book's key ideas..."></textarea>
+  <button onclick="makePrompt()">Create my AI prompt</button>
+  <button class="secondary" onclick="openChatGPT()">Open ChatGPT</button>
+  <div id="promptResult"></div>
+  <p class="notice">This app does not send your information anywhere automatically. Review prompts before sharing personal financial details with an online AI service.</p>
+ </div>
+ <div class="card"><h2>Daily financial learning prompts</h2>
+  <div class="item" onclick="setPrompt('Teach me one practical personal finance concept with an example and an action for today.')">💡 Teach me one finance concept</div>
+  <div class="item" onclick="setPrompt('Explain the latest risks and fundamentals I should research before investing in a company. Do not give a buy or sell instruction.')">📊 Help me research a company</div>
+  <div class="item" onclick="setPrompt('Explain compound growth with a simple example and a small weekly habit.')">🌱 Explain compounding</div>
+  <div class="item" onclick="setPrompt('Create a concise, structured study guide from the book notes I provide. Separate facts from interpretation.')">📚 Build a study guide</div>
+ </div>
+</section>
+</main>
+<nav>
+ <button class="active" data-tab="home" onclick="showTab('home')"><span>⌂</span>Home</button>
+ <button data-tab="finance" onclick="showTab('finance')"><span>＄</span>Money</button>
+ <button data-tab="stocks" onclick="showTab('stocks')"><span>↗</span>Stocks</button>
+ <button data-tab="books" onclick="showTab('books')"><span>▤</span>Books</button>
+ <button data-tab="chat" onclick="showTab('chat')"><span>✧</span>AI Chat</button>
+</nav>
+<script>
+const $=id=>document.getElementById(id);
+const get=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const put=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const quotes=[
+["An investment in knowledge pays the best interest.","Benjamin Franklin"],
+["The secret of getting ahead is getting started.","Mark Twain"],
+["Do not save what is left after spending; spend what is left after saving.","Warren Buffett"],
+["Great things are done by a series of small things brought together.","Vincent van Gogh"],
+["The best way to predict the future is to create it.","Peter Drucker"],
+["Beware of little expenses; a small leak will sink a great ship.","Benjamin Franklin"],
+["It always seems impossible until it's done.","Nelson Mandela"],
+["The individual investor should act consistently as an investor and not as a speculator.","Benjamin Graham"]
+];
+function newQuote(){let q=quotes[Math.floor(Math.random()*quotes.length)];$('quote').textContent='“'+q[0]+'”';$('author').textContent='— '+q[1]}
+function money(n){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n||0)}
+function showTab(id){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));window.scrollTo(0,0);render()}
+function addTransaction(){let amount=Number($('txAmount').value);if(!(amount>0)){alert('Enter an amount greater than zero.');return}let a=get('transactions',[]);a.unshift({type:$('txType').value,amount,note:$('txNote').value,date:new Date().toLocaleDateString()});put('transactions',a);$('txAmount').value='';$('txNote').value='';render()}
+function saveGoal(){let n=Number($('savingsGoal').value);if(n<0)return;put('goal',n);render()}
+function addTicker(){let t=$('ticker').value.trim().toUpperCase();if(!/^[A-Z.^-]{1,12}$/.test(t)){alert('Enter a valid ticker symbol.');return}let a=get('tickers',[]);if(!a.includes(t))a.push(t);put('tickers',a);$('ticker').value='';render()}
+function removeTicker(t){put('tickers',get('tickers',[]).filter(x=>x!==t));render()}
+function researchStock(){let t=$('researchTicker').value.trim().toUpperCase();if(!t){alert('Enter a ticker first.');return}window.open('https://finance.yahoo.com/quote/'+encodeURIComponent(t),'_blank','noopener')}
+function saveBook(){let title=$('bookTitle').value.trim();if(!title){alert('Enter a book title.');return}let a=get('books',[]);a.unshift({title,author:$('bookAuthor').value,notes:$('bookNotes').value,date:new Date().toLocaleDateString()});put('books',a);$('bookTitle').value='';$('bookAuthor').value='';$('bookNotes').value='';render()}
+function deleteBook(i){let a=get('books',[]);a.splice(i,1);put('books',a);render()}
+function makePrompt(){let q=$('question').value.trim();if(!q){alert('Write a question first.');return}let p="You are my careful personal finance, investing education and learning assistant. Be concise and organized. Explain uncertainty, distinguish facts from opinions, never promise investment returns, and do not present yourself as a licensed financial adviser. Do not give guaranteed buy/sell calls. Help me understand risks and practical next steps.\n\nMy question:\n"+q;$('promptResult').innerHTML='<p class="notice">Prompt ready. Copy it and paste it into your chosen AI assistant.</p><button onclick="copyPrompt()">Copy prompt</button>';window.currentPrompt=p}
+function copyPrompt(){navigator.clipboard?.writeText(window.currentPrompt).then(()=>alert('Prompt copied.')).catch(()=>alert(window.currentPrompt))}
+function openChatGPT(){window.open('https://chatgpt.com/','_blank','noopener')}
+function setPrompt(v){$('question').value=v;showTab('chat')}
+function exportData(){let data={transactions:get('transactions',[]),goal:get('goal',0),tickers:get('tickers',[]),books:get('books',[])};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mind-money-backup.json';a.click();URL.revokeObjectURL(a.href)}
+function render(){
+ let tx=get('transactions',[]), income=tx.filter(x=>x.type==='income').reduce((s,x)=>s+x.amount,0), expense=tx.filter(x=>x.type==='expense').reduce((s,x)=>s+x.amount,0), savings=tx.filter(x=>x.type==='saving').reduce((s,x)=>s+x.amount,0), goal=get('goal',0);
+ $('savedMetric').textContent=money(savings);$('spentMetric').textContent=money(expense);
+ $('incomeTotal').textContent=money(income);$('expenseTotal').textContent=money(expense);$('netTotal').textContent=money(income-expense);$('goalTotal').textContent=money(goal);
+ $('savingsGoal').value=goal||'';$('goalProgress').textContent=goal?`Progress: ${money(savings)} of ${money(goal)} (${Math.min(100,savings/goal*100).toFixed(1)}%).`:'Set a savings target to track progress.';
+ $('transactions').innerHTML=tx.length?tx.slice(0,30).map(x=>`<div class="item"><b>${esc(x.note||x.type)}</b><div class="muted">${esc(x.date)} · ${esc(x.type)}</div>${money(x.amount)}</div>`).join(''):'<div class="empty">No transactions yet.</div>';
+ let tickers=get('tickers',[]);$('watchlist').innerHTML=tickers.length?tickers.map(t=>`<div class="item row"><b>${esc(t)}</b><a href="https://finance.yahoo.com/quote/${encodeURIComponent(t)}" target="_blank" rel="noopener">Research ↗</a><button class="danger" onclick="removeTicker('${esc(t)}')">Remove</button></div>`).join(''):'<div class="empty">Your watchlist is empty.</div>';
+ let books=get('books',[]);$('bookList').innerHTML=books.length?books.map((b,i)=>`<div class="item"><b>${esc(b.title)}</b><div class="muted">${esc(b.author||'')} · ${esc(b.date)}</div><p>${esc(b.notes||'No notes added.')}</p><button class="danger" onclick="deleteBook(${i})">Delete</button></div>`).join(''):'<div class="empty">No books saved yet.</div>';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('today').textContent=new Date().toLocaleDateString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+newQuote();render();
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
